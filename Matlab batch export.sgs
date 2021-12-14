@@ -1,0 +1,71 @@
+'Skeleton batch process script MATLAB Export
+
+FindData%();   'Jump to function
+
+
+Func FindData%();
+Var num%;   'Variable for number of found files
+Var err%;   'Error 
+Var Nme$;   'Dummy variable for filelist command
+
+'Freq:=Input("Output sampling rate", Freq, 1, 30000);
+
+
+err%:=FilePathSet("",0,"Folder to process"); 'Select the folder to use
+   If Err%<0 then                            'If folder is cancelled or bad soemhow
+      Message("Folder selection failed");       'Give a message
+      Halt                                      'Quit the script
+      Endif                                              
+
+      Nme$:="";
+Num%:=Filelist(Nme$,0);       'Get the number of files in the folder
+   If Num%<=0 then            'If no files exist.....
+      Message("No data files to process");
+      FindData%()             'Jump to repeat our actions
+Endif;
+
+
+      Var Name$[num%];        'Set size of array to hold data file names
+      Filelist(Name$[],0);    'Get the names into the array
+        'data%:=FileNew(7,1,10,10,100);
+'Window(0,0,50,100);
+'WindowVisible(1);     
+   ProcessData%(Name$[],num%); 'Jump to the process fucntion and pass the names and number of files
+Return 1
+End
+
+Func ProcessData%(Name$[],num%);
+Var i%;           'Counter
+Var ViewNum%;     'Name of the current view
+Var Outname$;
+Var txt%;
+
+For i%:= 0 to num%-1 do       'Step round the names 
+   viewNum%:=Fileopen(Name$[i%],0); 'Open the file
+	'Window(50,0,100,100); ''''your code here
+	'WindowVisible();
+'XRange(0, MaxTime());
+
+   '''''''''''''''''''''''''
+
+	FrontView(ViewNum%);
+	OutName$:=Filename$(3)+Filename$(4);
+	OutName$:=Outname$+".mat";
+	'ExportRectFormat(freq, 2);
+	'Message(Maxtime());
+    ExportChanList("1..3"); 'Channels to export
+    ExportFrameList("1..36"); ' Number of frames to export
+    ExportTimeRange(0, 0.25); ' Length of frame to export
+    '*********************************************************
+	Txt%:=FileExportAs(Outname$,100, 0, "", 0, "UseSName=0|UseCName=0|WaveOpts=0|WaveData=2|Compat=0"); 'Export (string args)
+    '*********************************************************
+	FrontView(viewnum%);
+	'''''''''''''''''''''''''
+    Printlog("Processed %s %.2f\n",name$[i%],maxtime());  'Print the name of the processed file 
+    
+	Fileclose(); 	'Close the file and go to the next
+	
+Next
+
+Return 1
+End
